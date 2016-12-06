@@ -1,0 +1,393 @@
+{
+    "kind": "Template",
+    "apiVersion": "v1",
+    "metadata": {
+        "name": "test.json",
+        "creationTimestamp": null
+    },
+    "objects": [
+        {
+            "kind": "BuildConfig",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "fis-rest-ose-main",
+                "creationTimestamp": null,
+                "labels": {
+                    "app": "fis-rest-ose-main"
+                },
+                "annotations": {
+                    "openshift.io/generated-by": "OpenShiftWebConsole"
+                }
+            },
+            "spec": {
+                "triggers": [
+                    {
+                        "type": "ImageChange",
+                        "imageChange": {}
+                    },
+                    {
+                        "type": "ConfigChange"
+                    }
+                ],
+                "source": {
+                    "type": "Binary",
+                    "binary": {
+                        "asFile": "{}"
+                    }
+                },
+                "strategy": {
+                    "type": "Source",
+                    "sourceStrategy": {
+                        "from": {
+                            "kind": "ImageStreamTag",
+                            "namespace": "openshift",
+                            "name": "fis-java-openshift:1.0"
+                        }
+                    }
+                },
+                "output": {
+                    "to": {
+                        "kind": "ImageStreamTag",
+                        "name": "fis-rest-ose-main:latest"
+                    }
+                },
+                "resources": {}
+            },
+            "status": {
+                "lastVersion": 0
+            }
+        },
+        {
+            "kind": "Build",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "fis-rest-ose-main-1",
+                "creationTimestamp": null,
+                "labels": {
+                    "app": "fis-rest-ose-main",
+                    "buildconfig": "fis-rest-ose-main",
+                    "openshift.io/build-config.name": "fis-rest-ose-main"
+                },
+                "annotations": {
+                    "openshift.io/build.number": "1",
+                    "openshift.io/build.pod-name": "fis-rest-ose-main-1-build"
+                }
+            },
+            "spec": {
+                "serviceAccount": "builder",
+                "source": {
+                    "type": "Git",
+                    "git": {
+                        "uri": "nosuchrepo",
+                        "ref": "master"
+                    }
+                },
+                "strategy": {
+                    "type": "Source",
+                    "sourceStrategy": {
+                        "from": {
+                            "kind": "DockerImage",
+                            "name": "edr-np.am.lilly.com/jboss-fuse-6/fis-java-openshift@sha256:ca1f1c5ad72e89f29346140a3b1bf383529c50ee2f769e0f1b4e0092998d5246"
+                        }
+                    }
+                },
+                "output": {
+                    "to": {
+                        "kind": "ImageStreamTag",
+                        "name": "fis-rest-ose-main:latest"
+                    },
+                    "pushSecret": {
+                        "name": "builder-dockercfg-eh3jb"
+                    }
+                },
+                "resources": {}
+            },
+            "status": {
+                "phase": "New",
+                "outputDockerImageReference": "172.30.143.197:5000/fis-ose-rest-jms-main/fis-rest-ose-main:latest",
+                "config": {
+                    "name": "fis-rest-ose-main"
+                }
+            }
+        },
+        {
+            "kind": "ImageStream",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "fis-rest-ose-main",
+                "generation": 1,
+                "creationTimestamp": null,
+                "labels": {
+                    "app": "fis-rest-ose-main"
+                },
+                "annotations": {
+                    "openshift.io/generated-by": "OpenShiftWebConsole"
+                }
+            },
+            "spec": {},
+            "status": {
+                "dockerImageRepository": ""
+            }
+        },
+        {
+            "kind": "DeploymentConfig",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "fis-rest-ose-main",
+                "creationTimestamp": null,
+                "labels": {
+                    "app": "fis-rest-ose-main"
+                },
+                "annotations": {
+                    "openshift.io/generated-by": "OpenShiftWebConsole"
+                }
+            },
+            "spec": {
+                "strategy": {
+                    "type": "Rolling",
+                    "rollingParams": {
+                        "updatePeriodSeconds": 1,
+                        "intervalSeconds": 1,
+                        "timeoutSeconds": 600,
+                        "maxUnavailable": "25%",
+                        "maxSurge": "25%"
+                    },
+                    "resources": {}
+                },
+                "triggers": [
+                    {
+                        "type": "ImageChange",
+                        "imageChangeParams": {
+                            "automatic": true,
+                            "containerNames": [
+                                "fis-rest-ose-main"
+                            ],
+                            "from": {
+                                "kind": "ImageStreamTag",
+                                "name": "fis-rest-ose-main:latest"
+                            }
+                        }
+                    },
+                    {
+                        "type": "ConfigChange"
+                    }
+                ],
+                "replicas": 1,
+                "selector": {
+                    "deploymentconfig": "fis-rest-ose-main"
+                },
+                "template": {
+                    "metadata": {
+                        "creationTimestamp": null,
+                        "labels": {
+                            "app": "fis-rest-ose-main",
+                            "deploymentconfig": "fis-rest-ose-main"
+                        }
+                    },
+                    "spec": {
+                        "containers": [
+                            {
+                                "name": "fis-rest-ose-main",
+                                "image": "fis-rest-ose-main:latest",
+                                "ports": [
+                                    {
+                                        "containerPort": 8000,
+                                        "protocol": "TCP"
+                                    }
+                                ],
+                                "resources": {},
+                                "terminationMessagePath": "/dev/termination-log",
+                                "imagePullPolicy": "Always"
+                            }
+                        ],
+                        "restartPolicy": "Always",
+                        "terminationGracePeriodSeconds": 30,
+                        "dnsPolicy": "ClusterFirst",
+                        "securityContext": {}
+                    }
+                }
+            },
+            "status": {}
+        },
+        {
+            "kind": "Route",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "fis-rest-ose-main",
+                "creationTimestamp": null,
+                "labels": {
+                    "app": "fis-rest-ose-main"
+                },
+                "annotations": {
+                    "openshift.io/generated-by": "OpenShiftWebConsole",
+                    "openshift.io/host.generated": "true"
+                }
+            },
+            "spec": {
+                "host": "fis-rest-ose-main-fis-ose-rest-jms-main.rhel-cdk.10.1.2.2.xip.io",
+                "to": {
+                    "kind": "Service",
+                    "name": "fis-rest-ose-main"
+                },
+                "port": {
+                    "targetPort": "8000-tcp"
+                }
+            },
+            "status": {}
+        },
+        {
+            "kind": "Service",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "fis-rest-ose-main",
+                "creationTimestamp": null,
+                "labels": {
+                    "app": "fis-rest-ose-main"
+                },
+                "annotations": {
+                    "openshift.io/generated-by": "OpenShiftWebConsole"
+                }
+            },
+            "spec": {
+                "ports": [
+                    {
+                        "name": "8000-tcp",
+                        "protocol": "TCP",
+                        "port": 8000,
+                        "targetPort": 8000
+                    }
+                ],
+                "selector": {
+                    "deploymentconfig": "fis-rest-ose-main"
+                },
+                "type": "ClusterIP",
+                "sessionAffinity": "None"
+            },
+            "status": {
+                "loadBalancer": {}
+            }
+        },
+        {
+            "kind": "Pod",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "fis-rest-ose-main-1-build",
+                "creationTimestamp": null,
+                "labels": {
+                    "openshift.io/build.name": "fis-rest-ose-main-1"
+                },
+                "annotations": {
+                    "openshift.io/build.name": "fis-rest-ose-main-1",
+                    "openshift.io/scc": "privileged"
+                }
+            },
+            "spec": {
+                "volumes": [
+                    {
+                        "name": "docker-socket",
+                        "hostPath": {
+                            "path": "/var/run/docker.sock"
+                        }
+                    },
+                    {
+                        "name": "builder-dockercfg-eh3jb-push",
+                        "secret": {
+                            "secretName": "builder-dockercfg-eh3jb"
+                        }
+                    },
+                    {
+                        "name": "builder-token-vk08o",
+                        "secret": {
+                            "secretName": "builder-token-vk08o"
+                        }
+                    }
+                ],
+                "containers": [
+                    {
+                        "name": "sti-build",
+                        "image": "edr-np.am.lilly.com/openshift3/ose-sti-builder:v3.2.0.44",
+                        "args": [
+                            "--loglevel=0"
+                        ],
+                        "env": [
+                            {
+                                "name": "BUILD",
+                                "value": "{\"kind\":\"Build\",\"apiVersion\":\"v1\",\"metadata\":{\"name\":\"fis-rest-ose-main-1\",\"namespace\":\"fis-ose-rest-jms-main\",\"selfLink\":\"/oapi/v1/namespaces/fis-ose-rest-jms-main/builds/fis-rest-ose-main-1\",\"uid\":\"fbcb16c2-8be7-11e6-8fdd-525400825485\",\"resourceVersion\":\"43237\",\"creationTimestamp\":\"2016-10-06T17:11:55Z\",\"labels\":{\"app\":\"fis-rest-ose-main\",\"buildconfig\":\"fis-rest-ose-main\",\"openshift.io/build-config.name\":\"fis-rest-ose-main\"},\"annotations\":{\"openshift.io/build.number\":\"1\"}},\"spec\":{\"serviceAccount\":\"builder\",\"source\":{\"type\":\"Git\",\"git\":{\"uri\":\"nosuchrepo\",\"ref\":\"master\"},\"secrets\":null},\"strategy\":{\"type\":\"Source\",\"sourceStrategy\":{\"from\":{\"kind\":\"DockerImage\",\"name\":\"edr-np.am.lilly.com/jboss-fuse-6/fis-java-openshift@sha256:ca1f1c5ad72e89f29346140a3b1bf383529c50ee2f769e0f1b4e0092998d5246\"}}},\"output\":{\"to\":{\"kind\":\"DockerImage\",\"name\":\"172.30.143.197:5000/fis-ose-rest-jms-main/fis-rest-ose-main:latest\"},\"pushSecret\":{\"name\":\"builder-dockercfg-eh3jb\"}},\"resources\":{},\"postCommit\":{}},\"status\":{\"phase\":\"New\",\"outputDockerImageReference\":\"172.30.143.197:5000/fis-ose-rest-jms-main/fis-rest-ose-main:latest\",\"config\":{\"kind\":\"BuildConfig\",\"namespace\":\"fis-ose-rest-jms-main\",\"name\":\"fis-rest-ose-main\"}}}\n"
+                            },
+                            {
+                                "name": "BUILD_LOGLEVEL",
+                                "value": "0"
+                            },
+                            {
+                                "name": "SOURCE_REPOSITORY",
+                                "value": "nosuchrepo"
+                            },
+                            {
+                                "name": "SOURCE_URI",
+                                "value": "nosuchrepo"
+                            },
+                            {
+                                "name": "SOURCE_REF",
+                                "value": "master"
+                            },
+                            {
+                                "name": "ORIGIN_VERSION",
+                                "value": "v3.2.0.44"
+                            },
+                            {
+                                "name": "ALLOWED_UIDS",
+                                "value": "1-"
+                            },
+                            {
+                                "name": "DROP_CAPS",
+                                "value": "KILL,MKNOD,SETGID,SETUID,SYS_CHROOT"
+                            },
+                            {
+                                "name": "PUSH_DOCKERCFG_PATH",
+                                "value": "/var/run/secrets/openshift.io/push"
+                            }
+                        ],
+                        "resources": {},
+                        "volumeMounts": [
+                            {
+                                "name": "docker-socket",
+                                "mountPath": "/var/run/docker.sock"
+                            },
+                            {
+                                "name": "builder-dockercfg-eh3jb-push",
+                                "readOnly": true,
+                                "mountPath": "/var/run/secrets/openshift.io/push"
+                            },
+                            {
+                                "name": "builder-token-vk08o",
+                                "readOnly": true,
+                                "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount"
+                            }
+                        ],
+                        "terminationMessagePath": "/dev/termination-log",
+                        "imagePullPolicy": "IfNotPresent",
+                        "securityContext": {
+                            "privileged": true
+                        }
+                    }
+                ],
+                "restartPolicy": "Never",
+                "terminationGracePeriodSeconds": 30,
+                "dnsPolicy": "ClusterFirst",
+                "host": "rhel-cdk",
+                "serviceAccountName": "builder",
+                "serviceAccount": "builder",
+                "nodeName": "rhel-cdk",
+                "securityContext": {},
+                "imagePullSecrets": [
+                    {
+                        "name": "builder-dockercfg-eh3jb"
+                    }
+                ]
+            },
+            "status": {
+                "phase": "Pending"
+            }
+        }
+    ]
+}
